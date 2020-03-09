@@ -37,3 +37,27 @@ binary <- function(x)
   }
 }
 
+
+rng_general <- function(k, a, b, m, graine)
+{
+  v <- rep(0, k)
+  v[1] <- (a * graine + b) %% m
+  for (i in 2:k)
+  {
+    v[i] <- (a * v[i-1] + b) %% m
+  }
+  
+  return(v)
+}
+
+
+randu <- function(k, graine)
+{
+  return(rng_general(k, 65539, 0, 2^31, graine))
+}
+
+std_minimal <- function(k, graine)
+{
+  return(rng_general(k, 16807, 0, 2^31 - 1, graine))
+}
+
