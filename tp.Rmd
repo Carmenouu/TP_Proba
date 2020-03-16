@@ -8,6 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(randtoolbox)
 source('generateur.R')
 source('tests.R')
+source('files.R')
 ```
 
 # Question 2
@@ -55,7 +56,9 @@ Pour Standard Minimal, on ne peut rien conclure pour l'instant.
 ```{r}
 nb_seed <- 100
 seed <- sample.int(2^31, nb_seed)
+```
 
+```{r}
 frequence <- sapply(seed, function(s) Frequency(randu(k, s), 31))
 plot(frequence)
 abline(h = 0.01, col = "red")
@@ -74,6 +77,12 @@ abline(h = 0.01, col = "red")
 percentage <- PercentageTest(frequence, 0.01) / nb_seed
 mtext(paste("Proportion de tests réussis : ", percentage * 100, " %"), side = 3)
 
+frequence <- sapply(seed, function(s) Frequency(VonNeumann(k, 1, s), 14))
+plot(frequence)
+abline(h = 0.01, col = "red")
+percentage <- PercentageTest(frequence, 0.01) / nb_seed
+mtext(paste("Proportion de tests réussis : ", percentage * 100, " %"), side = 3)
+
 ```
 
 # Question 4
@@ -85,8 +94,6 @@ Ainsi, RANDU ne passe le premier test et n'est donc pas un bon générateur alé
 
 Pour Standard Minimal, on ne peut rien conclure pour l'instant.
 ```{r}
-seed <- sample.int(2^31, 100)
-
 frequence <- sapply(seed, function(s) Runs(randu(k, s), 31))
 plot(frequence)
 abline(h = 0.01, col = "red")
@@ -100,6 +107,12 @@ percentage <- PercentageTest(frequence, 0.01) / nb_seed
 mtext(paste("Proportion de tests réussis : ", percentage * 100, " %"), side = 3)
 
 frequence <- sapply(seed, function(s) Runs(MersenneTwister(k, 1, s), 32))
+plot(frequence)
+abline(h = 0.01, col = "red")
+percentage <- PercentageTest(frequence, 0.01) / nb_seed
+mtext(paste("Proportion de tests réussis : ", percentage * 100, " %"), side = 3)
+
+frequence <- sapply(seed, function(s) Runs(VonNeumann(k, 1, s), 14))
 plot(frequence)
 abline(h = 0.01, col = "red")
 percentage <- PercentageTest(frequence, 0.01) / nb_seed
@@ -121,10 +134,63 @@ abline(h = 0.01, col = "red")
 percentage <- PercentageTest(frequence, 0.01) / nb_seed
 mtext(paste("Proportion de tests réussis : ", percentage * 100, " %"), side = 3)
 
-frequence <- sapply(seed, function(s) order.test(VonNeumann(k, 1, s), d = 4, echo=FALSE)$p.value)
+frequence <- sapply(seed, function(s) order.test(as.vector(VonNeumann(k, 1, s)), d = 4, echo=FALSE)$p.value)
 plot(frequence)
 abline(h = 0.01, col = "red")
 percentage <- PercentageTest(frequence, 0.01) / nb_seed
 mtext(paste("Proportion de tests réussis : ", percentage * 100, " %"), side = 3)
 
+frequence <- sapply(seed, function(s) order.test(as.vector(MersenneTwister(k, 1, s)), d = 4, echo=FALSE)$p.value)
+plot(frequence)
+abline(h = 0.01, col = "red")
+percentage <- PercentageTest(frequence, 0.01) / nb_seed
+mtext(paste("Proportion de tests réussis : ", percentage * 100, " %"), side = 3)
+
+```
+
+# Question 7
+
+```{r}
+taux_arrivees = 6
+taux_departs = 10
+duree = 12
+
+file = FileMM1(taux_arrivees/60, taux_departs/60, duree*60)
+evolution = EvolutionFileMM1(file$arrivees, file$departs, duree*60)
+plot(x=evolution$dates, y=evolution$nombres, type="l")
+mean(evolution$nombres)
+
+taux_arrivees = 8
+file = FileMM1(taux_arrivees/60, taux_departs/60, duree*60)
+evolution = EvolutionFileMM1(file$arrivees, file$departs, duree*60)
+plot(x=evolution$dates, y=evolution$nombres, type="l")
+
+taux_arrivees = 10
+file = FileMM1(taux_arrivees/60, taux_departs/60, duree*60)
+evolution = EvolutionFileMM1(file$arrivees, file$departs, duree*60)
+plot(x=evolution$dates, y=evolution$nombres, type="l")
+
+taux_arrivees = 14
+file = FileMM1(taux_arrivees/60, taux_departs/60, duree*60)
+evolution = EvolutionFileMM1(file$arrivees, file$departs, duree*60)
+plot(x=evolution$dates, y=evolution$nombres, type="l")
+```
+Les résultats montre que plus on augmente la fréquence d'arrivées, moins la file d'attente a de chances de se vider.
+
+# Question 8
+```{r}
+iterations <- 1000
+means <- vector(length=iterations)
+
+taux_arrivees = 6
+taux_departs = 10
+duree = 12
+for (i in 1:iterations)
+{
+  file = FileMM1(taux_arrivees/60, taux_departs/60, duree*60)
+  evolution = EvolutionFileMM1(file$arrivees, file$departs, duree*60)
+  # plot(x=evolution$dates, y=evolution$nombres, type="l")
+  means[i] <- weighted.mean(evolution$nombres, evolution$durees)
+}
+print(mean(means))
 ```
