@@ -226,7 +226,7 @@ plot(table(realisations), col = "red")
 
 # par(new = TRUE)
 xseq<-seq(0, n, 0.1)
-plot(xseq, dnorm(xseq, n*p, n*p*(1-p)), col='blue', type='l')
+lines(xseq, 28000*dnorm(xseq, n*p, n*p*(1-p)), col='blue', type='l')
 ```
 # Question Bonus 2
 
