@@ -214,9 +214,9 @@ for (taux_arrivees in c(2, 6, 8, 9.9))
 # Question Bonus 1
 
 ```{r}
-nb_iterations <- 1000
+nb_iterations <- 10000
 realisations <- vector(length = nb_iterations)
-n <- 20
+n <- 30
 p <- 0.5
 for (i in 1:nb_iterations)
 {
@@ -225,9 +225,8 @@ for (i in 1:nb_iterations)
 plot(table(realisations), col = "red")
 
 # par(new = TRUE)
-xseq<-seq(0,n,0.01)
-densities<-dnorm(xseq, n*p, n*p*(1-p))
-plot(xseq, densities, col = "blue", type="l")
+xseq<-seq(0, n, 0.1)
+plot(xseq, dnorm(xseq, n*p, n*p*(1-p)), col='blue', type='l')
 ```
 # Question Bonus 2
 
