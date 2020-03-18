@@ -22,7 +22,7 @@ FonctionRepartitionBonus <- function(x)
   }
   else
   {
-    return (2*log(1 + x))/((log(2)^2)*(1+x))
+    return ( (2*log(1 + x)) / ((log(2)^2) * (1+x)) )
   }
 }
 

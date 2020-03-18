@@ -171,7 +171,7 @@ file = FileMM1(taux_arrivees/60, taux_departs/60, duree*60)
 evolution = EvolutionFileMM1(file$arrivees, file$departs, duree*60)
 plot(x=evolution$dates, y=evolution$nombres, type="l")
 ```
-Les résultats montre que plus on augmente la fréquence d'arrivées, moins la file d'attente a de chances de se vider.
+Les résultats montrent que plus on augmente la fréquence d'arrivées, moins la file d'attente a de chances de se vider.
 
 # Question 8
 ```{r}
@@ -203,7 +203,7 @@ VerificationFormuleLittle <- function(taux_arrivees, taux_departs, duree)
 }
 
 
-for (taux_arrivees in c(6, 8, 10, 14))
+for (taux_arrivees in c(2, 6, 8, 9.9))
 {
   VerificationFormuleLittle(taux_arrivees, 10, 100)
 }
@@ -231,9 +231,10 @@ plot(xseq, densities, col = "blue", type="l")
 ```
 # Question Bonus 2
 
+Pour le même rés
 ```{r}
-nb_iterations <- 100000
-microbenchmark::microbenchmark(times=nb_iterations,LoiBonusInversion(), LoiBonusRejet())
+nb_iterations <- 1000
+microbenchmark::microbenchmark(times=nb_iterations, LoiBonusInversion(), LoiBonusRejet())
 realInversion <- vector(length = nb_iterations)
 realRejet <- vector(length = nb_iterations)
 for (i in 1:nb_iterations)
@@ -241,10 +242,11 @@ for (i in 1:nb_iterations)
   realInversion[i] <- LoiBonusInversion()
   realRejet[i] <- LoiBonusRejet()
 }
-mean(realInversion)
-mean(realRejet)
-hist(realInversion, ylim = c(0, 8000))
-hist(realRejet, ylim = c(0, 8000))
 
+xseq<-seq(0, 1, 0.01)
 
+hist(realInversion, breaks = 20)
+lines(xseq, nb_iterations/20*FonctionRepartitionBonus(xseq), col='red')
+hist(realRejet, breaks = 20)
+lines(xseq, nb_iterations/20*FonctionRepartitionBonus(xseq), col='red')
 ```
