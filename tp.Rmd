@@ -231,7 +231,8 @@ plot(xseq, densities, col = "blue", type="l")
 ```
 # Question Bonus 2
 
-Pour le même rés
+Pour le même résultat, le temps d'exécution moyen de la simulation par rejet est 10 fois plus grand que celui de la simulation par inversion.
+Il faut donc favoriser l'utilisation de la simulation par inversion dès que possible.
 ```{r}
 nb_iterations <- 1000
 microbenchmark::microbenchmark(times=nb_iterations, LoiBonusInversion(), LoiBonusRejet())
