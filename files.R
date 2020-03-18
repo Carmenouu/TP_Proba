@@ -6,6 +6,8 @@ FileMM1 <- function(lambda, mu, D)
   date_arrivee_prec <- 0
   date_depart_prec <- 0
   
+  temps_attente_total <- 0
+  
   while (TRUE)
   {
     attente_arrivee <- rexp(1, lambda)
@@ -45,11 +47,18 @@ FileMM1 <- function(lambda, mu, D)
     departs <- c(departs, date_depart)
     
     date_depart_prec <- date_depart
-    date_arrivee_prec <- date_arrivee
+    temps_attente_total <- temps_attente_total + (departs[i] - arrivees[i])
+    
     i <- i + 1
   }
   
-  return(list(arrivees=arrivees, departs=departs))
+  while (i <= length(arrivees))
+  {
+    temps_attente_total <- temps_attente_total + (D - arrivees[i])
+    i <- i + 1
+  }
+  
+  return(list(arrivees=arrivees, departs=departs, temps_attente_moyen=temps_attente_total / length(arrivees)))
 }
 
 EvolutionFileMM1 <- function(arrivees, departs, duree_totale)
@@ -84,6 +93,18 @@ EvolutionFileMM1 <- function(arrivees, departs, duree_totale)
   
   durees <- c(durees, duree_totale - dates[length(dates)])
   return(list(dates=dates, nombres=nombres, durees=durees))
+}
+
+MoyenneTheoriqueN <- function(taux_arrivees, taux_departs)
+{
+  alpha <- taux_arrivees / taux_departs
+  return (alpha / (1 - alpha))
+}
+
+MoyenneTheoriqueW <- function(taux_arrivees, taux_departs, lambda)
+{
+  # Application de la formule de Little : E(N) = E(W)*lambda
+  return (MoyenneTheoriqueN(taux_arrivees, taux_departs) / lambda)
 }
 
 
