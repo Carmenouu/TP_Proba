@@ -211,6 +211,12 @@ for (taux_arrivees in c(6, 8, 10, 14))
 
 ```
 
+|_____|__________|_________________________|
+0     p(X=0)    p(X=0)+p(X=1)                               1
+
+0.2
+{0, 1, 2, 3, 4, 5, 6, ..., n} -> 1/6
+
 # Question Bonus 1
 
 ```{r}
@@ -228,8 +234,4 @@ plot(table(realisations), col = "red")
 xseq<-seq(0,n,0.01)
 densities<-dnorm(xseq, n*p, n*p*(1-p))
 plot(xseq, densities, col = "blue", type="l")
-
-
-plot(table(realisations), col = "red", xlim = c(0, n))
-curve(dnorm(xseq, n*p, n*p*(1-p)), add=TRUE, col="darkblue")
 ```
