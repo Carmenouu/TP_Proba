@@ -211,12 +211,6 @@ for (taux_arrivees in c(6, 8, 10, 14))
 
 ```
 
-|_____|__________|_________________________|
-0     p(X=0)    p(X=0)+p(X=1)                               1
-
-0.2
-{0, 1, 2, 3, 4, 5, 6, ..., n} -> 1/6
-
 # Question Bonus 1
 
 ```{r}
@@ -234,4 +228,23 @@ plot(table(realisations), col = "red")
 xseq<-seq(0,n,0.01)
 densities<-dnorm(xseq, n*p, n*p*(1-p))
 plot(xseq, densities, col = "blue", type="l")
+```
+# Question Bonus 2
+
+```{r}
+nb_iterations <- 100000
+microbenchmark::microbenchmark(times=nb_iterations,LoiBonusInversion(), LoiBonusRejet())
+realInversion <- vector(length = nb_iterations)
+realRejet <- vector(length = nb_iterations)
+for (i in 1:nb_iterations)
+{
+  realInversion[i] <- LoiBonusInversion()
+  realRejet[i] <- LoiBonusRejet()
+}
+mean(realInversion)
+mean(realRejet)
+hist(realInversion, ylim = c(0, 8000))
+hist(realRejet, ylim = c(0, 8000))
+
+
 ```

@@ -13,3 +13,35 @@ LoiBinomiale <- function(n, p)
   
   return (k)
 }
+
+FonctionRepartitionBonus <- function(x)
+{
+  if (x < 0 || x > 1)
+  {
+    return (0)
+  }
+  else
+  {
+    return (2*log(1 + x))/((log(2)^2)*(1+x))
+  }
+}
+
+LoiBonusInversion <- function()
+{
+  u <- runif(1)
+  return (exp( sqrt(u)*log(2) ) - 1)
+}
+
+LoiBonusRejet <- function()
+{
+  c <- 2 / (log(2)^2)
+  while (TRUE)
+  {
+    y <- runif(1)
+    u <- runif(1)
+    
+    if (u <= FonctionRepartitionBonus(y) / c)
+      return (y)
+  }
+  
+}
