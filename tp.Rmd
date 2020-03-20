@@ -1,6 +1,11 @@
 ---
 title: "TP génération de nombres aléatoires et probabilités"
-output: html_document
+author:
+- Aleryc Serrania
+- Marie-Carmen Prévot
+- Oumar Diakhaby
+output:
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -16,55 +21,61 @@ source('lois.R')
 
 ```{r include=FALSE}
 k <- 1000
-seed <- 13813817
+seed <- 135468
 ```
-
-## 2.1
 
 Pour VonNeumann, la répartition est très mauvaise et pas visiblement uniforme. 
-Les autres générateurs ont l'air d'être 
+Les autres générateurs ont visiblement l'air de répartir uniformément les valeurs
 ```{r}
-breaks = 10
-rep <- VonNeumann(k, 1, seed) / (9999)
-hist(rep, main = "Répartition uniforme avec VonNeumann", breaks = breaks)
-
-rep <- randu(k, seed) / (2^31 - 1)
-hist(rep, main = "Répartition uniforme avec RANDU", breaks = breaks)
-
-rep <- std_minimal(k, seed) / (2^31 - 2)
-hist(rep, main = "Répartition uniforme avec Standard Minimal", breaks = breaks)
-
-rep <- MersenneTwister(k, 1, seed) / (2^32 - 1)
-hist(rep, main = "Répartition uniforme avec MersenneTwister", breaks = breaks)
-
 breaks = 30
 rep <- VonNeumann(k, 1, seed) / (9999)
-hist(rep, main = "Répartition uniforme avec VonNeumann", breaks = breaks)
+hist(rep,
+     main = paste("Répartition uniforme avec VonNeumann, breaks =", breaks), 
+     breaks = breaks)
 
 rep <- randu(k, seed) / (2^31 - 1)
-hist(rep, main = "Répartition uniforme avec RANDU", breaks = breaks)
+hist(rep, 
+     main = paste("Répartition uniforme avec RANDU, breaks =", breaks), 
+     breaks = breaks)
 
 rep <- std_minimal(k, seed) / (2^31 - 2)
-hist(rep, main = "Répartition uniforme avec Standard Minimal", breaks = breaks)
+hist(rep,
+     main = paste("Répartition uniforme avec Standard Minimal, breaks =", breaks), 
+     breaks = breaks)
 
 rep <- MersenneTwister(k, 1, seed) / (2^32 - 1)
-hist(rep, main = "Répartition uniforme avec MersenneTwister", breaks = breaks)
+hist(rep, 
+     main = paste("Répartition uniforme avec MersenneTwister, breaks =", breaks), 
+     breaks = breaks)
 ```
 
-Pour VonNeumann, on remarque les points sont peu étalés
-Pour les autres, on ne peut a priori pas   (et donc aléatoire) :
+Pour VonNeumann, on remarque les points sont peu étalés. Par exemple, lorsque la valeur actuelle est proche de zéro, les valeurs suivantes restent proche de 0. Cela est due à l'élévation au carré de la valeur. 0² = 0 et 1² = 1, donc une fois la valeur de 0 ou 1 atteinte, le système n'évolue plus.
+Pour les autres, la génération semble être chaotique : la moindre variation de la valeur actuelle peut engendrer une valeur suivante totalement différente.
+
 ```{r}
 rep <- VonNeumann(k, 1, seed)
-plot(rep[1:k-1], rep[2:k])
+plot(rep[1:k-1], rep[2:k], 
+     main = "VonNeumann, Valeur obtenue en fonction de la précédente",
+     xlab = "Valeur obtenue",
+     ylab = "Valeur suivante")
 
 rep <- randu(k, seed)
-plot(rep[1:k-1], rep[2:k])
+plot(rep[1:k-1], rep[2:k], 
+     main = "RANDU, Valeur obtenue en fonction de la précédente",
+     xlab = "Valeurs obtenues",
+     ylab = "Valeurs suivantes")
 
 rep <- std_minimal(k, seed)
-plot(rep[1:k-1], rep[2:k])
+plot(rep[1:k-1], rep[2:k], 
+     main = "StdMinimal, Valeur obtenue en fonction de la précédente",
+     xlab = "Valeurs obtenues",
+     ylab = "Valeurs suivantes")
 
 rep <- MersenneTwister(k, 1, seed)
-plot(rep[1:k-1], rep[2:k])
+plot(rep[1:k-1], rep[2:k], 
+     main = "MersenneTwister, Valeur obtenue en fonction de la précédente",
+     xlab = "Valeurs obtenues",
+     ylab = "Valeurs suivantes")
 ```
 
 # Question 3
@@ -79,30 +90,35 @@ Pour Standard Minimal et MersenneTwister, on ne peut rien conclure pour l'instan
 ```{r}
 nb_seed <- 100
 seed <- sample.int(2^31, nb_seed)
-ShowTestResults <- function(frequence)
+ShowTestResults <- function(frequence, name_generator, name_test)
 {
+  name =  paste(paste("Test", name_test, "sur", name_generator),  
+                "Proportion de tests réussis par rapport à la proportion", 
+                  paste("de tests échoués (sur ", nb_seed, ")", sep=""), 
+                sep="\n")
   nb_reussis <- PercentageTest(frequence, 0.01) 
   percentage <- nb_reussis / nb_seed
-  plot(frequence, xlim = c(0, 100), ylim = c(0, 1.0))
-  abline(h = 0.01, col = "red")
-  mtext(paste("Proportion de tests réussis : ", percentage * 100, " %"), side = 3)
-  pie(c(percentage, 1 - percentage), labels = c(nb_reussis, nb_seed - nb_reussis), col = c("green", "red"))
+  # plot(frequence, xlim = c(0, 100), ylim = c(0, 1.0))
+  # abline(h = 0.01, col = "red")
+  # mtext(paste("Proportion de tests réussis : ", percentage * 100, " %"), side = 3)
+  pie(c(percentage, 1 - percentage), labels = c(nb_reussis, nb_seed - nb_reussis), 
+      col = c("green", "red"), main = name)
   legend("topright", c(">= 0.01", "< 0.01"), cex = 0.8, fill = c("green", "red"))
 }
 ```
 
 ```{r}
 frequence <- sapply(seed, function(s) Frequency(VonNeumann(k, 1, s), 14))
-ShowTestResults(frequence)
+ShowTestResults(frequence, "VonNeumann", "Frequency")
 
 frequence <- sapply(seed, function(s) Frequency(randu(k, s), 31))
-ShowTestResults(frequence)
+ShowTestResults(frequence, "RANDU", "Frequency")
 
 frequence <- sapply(seed, function(s) Frequency(std_minimal(k, s), 31))
-ShowTestResults(frequence)
+ShowTestResults(frequence, "StdMinimal", "Frequency")
 
 frequence <- sapply(seed, function(s) Frequency(MersenneTwister(k, 1, s), 32))
-ShowTestResults(frequence)
+ShowTestResults(frequence, "MersenneTwister", "Frequency")
 ```
 
 # Question 4
@@ -115,65 +131,77 @@ Ainsi, RANDU et VonNeumann ne passe le premier test et n'est donc pas un bon gé
 Pour Standard Minimal et MersenneTwister, on ne peut rien conclure pour l'instant.
 ```{r}
 frequence <- sapply(seed, function(s) Runs(VonNeumann(k, 1, s), 14))
-ShowTestResults(frequence)
+ShowTestResults(frequence, "VonNeumann", "Runs")
 
 frequence <- sapply(seed, function(s) Runs(randu(k, s), 31))
-ShowTestResults(frequence)
+ShowTestResults(frequence, "RANDU", "Runs")
 
 frequence <- sapply(seed, function(s) Runs(std_minimal(k, s), 31))
-ShowTestResults(frequence)
+ShowTestResults(frequence, "StdMinimal", "Runs")
 
 frequence <- sapply(seed, function(s) Runs(MersenneTwister(k, 1, s), 32))
-ShowTestResults(frequence)
+ShowTestResults(frequence, "MersenneTwister", "Runs")
 
 ```
 
 # Question 5
 
 ```{r}
-frequence <- sapply(seed, function(s) order.test(as.vector(VonNeumann(k, 1, s)), d = 4, echo=FALSE)$p.value)
-ShowTestResults(frequence)
+frequence <- sapply(seed, function(s) {
+  order.test(as.vector(VonNeumann(k, 1, s)), d = 4, echo=FALSE)$p.value
+})
+ShowTestResults(frequence, "VonNeumann", "Order")
 
-frequence <- sapply(seed, function(s) order.test(randu(k, s), d = 4, echo=FALSE)$p.value)
-ShowTestResults(frequence)
+frequence <- sapply(seed, function(s) {
+  order.test(randu(k, s), d = 4, echo=FALSE)$p.value
+})
+ShowTestResults(frequence, "RANDU", "Order")
 
-frequence <- sapply(seed, function(s) order.test(std_minimal(k, s), d = 4, echo=FALSE)$p.value)
-ShowTestResults(frequence)
+frequence <- sapply(seed, function(s) { 
+  order.test(std_minimal(k, s), d = 4, echo=FALSE)$p.value
+})
+ShowTestResults(frequence, "StdMinimal", "Order")
 
-frequence <- sapply(seed, function(s) order.test(as.vector(MersenneTwister(k, 1, s)), d = 4, echo=FALSE)$p.value)
-ShowTestResults(frequence)
+frequence <- sapply(seed, function(s) {
+  order.test(as.vector(MersenneTwister(k, 1, s)), d = 4, echo=FALSE)$p.value
+})
+ShowTestResults(frequence, "MersenneTwister", "Order")
 
 ```
 
 # Question 7
 
+Les résultats montrent que plus on augmente la fréquence d'arrivées, moins la file d'attente a de chances de se vider et plus la file est vite surchargée.
+
 ```{r}
-taux_arrivees = 6
+ShowEvolutionFile <- function(taux_arrivees, taux_departs, duree)
+{
+  title = paste("Evolution du nombre de personnes en attente de réponse du serveur",
+                paste("(taux_arrivees=", taux_arrivees, "/h, taux_departs=", taux_departs, 
+                      "/h, duree=", duree, "h)",  sep=""),
+                sep="\n")
+  file = FileMM1(taux_arrivees, taux_departs, duree)
+  evolution = EvolutionFileMM1(file$arrivees, file$departs, duree)
+  plot(x=evolution$dates, y=evolution$nombres, type="l", col = "blue", main = title,
+       xlab = "dates (en h)", ylab = "nombres de personnes en attente")
+}
+```
+
+```{r}
 taux_departs = 10
 duree = 12
 
-file = FileMM1(taux_arrivees/60, taux_departs/60, duree*60)
-evolution = EvolutionFileMM1(file$arrivees, file$departs, duree*60)
-plot(x=evolution$dates, y=evolution$nombres, type="l")
-
-taux_arrivees = 8
-file = FileMM1(taux_arrivees/60, taux_departs/60, duree*60)
-evolution = EvolutionFileMM1(file$arrivees, file$departs, duree*60)
-plot(x=evolution$dates, y=evolution$nombres, type="l")
-
-taux_arrivees = 10
-file = FileMM1(taux_arrivees/60, taux_departs/60, duree*60)
-evolution = EvolutionFileMM1(file$arrivees, file$departs, duree*60)
-plot(x=evolution$dates, y=evolution$nombres, type="l")
-
-taux_arrivees = 14
-file = FileMM1(taux_arrivees/60, taux_departs/60, duree*60)
-evolution = EvolutionFileMM1(file$arrivees, file$departs, duree*60)
-plot(x=evolution$dates, y=evolution$nombres, type="l")
+for (taux_arrivees in c(6, 8, 10, 14))
+{
+  ShowEvolutionFile(taux_arrivees, taux_departs, duree)
+}
 ```
-Les résultats montrent que plus on augmente la fréquence d'arrivées, moins la file d'attente a de chances de se vider.
+
 
 # Question 8
+
+On remarque que plus le taux d'arrivées est proche du taux de départs, moins la moyenne empirique est proche de la moyenne théorique : il faut une durée plus longue pour s'en rapprocher.
+
 ```{r}
 VerificationFormuleLittle <- function(taux_arrivees, taux_departs, duree)
 {
@@ -186,7 +214,6 @@ VerificationFormuleLittle <- function(taux_arrivees, taux_departs, duree)
   {
     file = FileMM1(lambda, mu, duree)
     evolution = EvolutionFileMM1(file$arrivees, file$departs, duree)
-    # plot(x=evolution$dates, y=evolution$nombres, type="l")
     means[i] <- weighted.mean(evolution$nombres, evolution$durees)
     temps_moyens[i] <- mean(file$temps_attente_moyen)
   }
@@ -228,9 +255,10 @@ plot(table(realisations), col = "red")
 xseq<-seq(0, n, 0.1)
 lines(xseq, 28000*dnorm(xseq, n*p, n*p*(1-p)), col='blue', type='l')
 ```
+
 # Question Bonus 2
 
-Pour le même résultat, le temps d'exécution moyen de la simulation par rejet est 10 fois plus grand que celui de la simulation par inversion.
+Pour le même résultat, le temps d'exécution moyen de la simulation par rejet est plus grand (d'un facteur 10) que celui de la simulation par inversion.
 Il faut donc favoriser l'utilisation de la simulation par inversion dès que possible.
 ```{r}
 nb_iterations <- 1000
