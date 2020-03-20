@@ -148,11 +148,11 @@ ShowTestResults(frequence, "MersenneTwister", "Runs")
 
 Cette fois-ci c'est seulement pour VonNeumann que l'on observe un grand nombre de tests dont la p valeur est inférieure à 1%.
 
-Pour Standard Minimal et MersenneTwister, on observe très peu de p valeurs inférieures à 1 %.
+Pour Standard Minimal, MersenneTwister et RANDU, on observe très peu de p valeurs inférieures à 1 %.
 
-RANDU et VonNeumann ne passe donc pas le second test non plus.
+VonNeumann ne passe donc pas le troisième test non plus.
 
-Pour Standard Minimal et MersenneTwister, on ne peut rien conclure pour l'instant.
+Pour Standard Minimal et MersenneTwister, on ne peut toujours rien conclure pour l'instant mais ils semblent être de très bon générateurs puisqu'ils ont passés les trois tests.
 ```{r}
 frequence <- sapply(seed, function(s) {
   order.test(as.vector(VonNeumann(k, 1, s)), d = 4, echo=FALSE)$p.value
