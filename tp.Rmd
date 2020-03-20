@@ -25,7 +25,7 @@ seed <- sample.int(2^31, 1)
 ```
 
 Pour VonNeumann, la répartition est très mauvaise et pas visiblement uniforme. 
-Les autres générateurs ont visiblement l'air de répartir uniformément les valeurs
+Les autres générateurs ont visiblement l'air de répartir uniformément les valeurs.
 ```{r}
 breaks = 30
 rep <- VonNeumann(k, 1, seed) / (9999)
@@ -49,8 +49,8 @@ hist(rep,
      breaks = breaks)
 ```
 
-Pour VonNeumann, on remarque les points sont peu étalés. Par exemple, lorsque la valeur actuelle est proche de zéro, les valeurs suivantes restent proche de 0. Cela est due à l'élévation au carré de la valeur. 0² = 0 et 1² = 1, donc une fois la valeur de 0 ou 1 atteinte, le système n'évolue plus.
-Pour les autres, la génération semble être chaotique : la moindre variation de la valeur actuelle peut engendrer une valeur suivante totalement différente.
+Pour VonNeumann, on remarque les points sont peu étalés. Par exemple, lorsque la valeur actuelle est proche de zéro, les valeurs suivantes restent proche de 0. Cela est dû à l'élévation au carré de la valeur. 0² = 0 et 1² = 1, donc une fois la valeur de 0 ou 1 atteinte, le système n'évolue plus.
+Pour les autres, la génération semble être chaotique : la moindre variation de la valeur obtenue peut engendrer une valeur suivante totalement différente.
 
 ```{r}
 rep <- VonNeumann(k, 1, seed)
