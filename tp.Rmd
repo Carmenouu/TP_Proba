@@ -21,7 +21,7 @@ source('lois.R')
 
 ```{r include=FALSE}
 k <- 1000
-seed <- 135468
+seed <- sample.int(2^31, 1)
 ```
 
 Pour VonNeumann, la répartition est très mauvaise et pas visiblement uniforme. 
